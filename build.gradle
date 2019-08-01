@@ -1,0 +1,123 @@
+group = 'org.meiskalt7.tools'
+
+rootProject.wrapper.gradleVersion = '5.4.1'
+version = "1.0.0"
+
+buildscript {
+    ext {
+        servicePackage = 'org.meiskalt7.tools.kafka'
+        servicePackageSlashes = servicePackage.replace('.', '/')
+
+        ver = [
+                sonarqube           : '2.7.1',
+                lombokPlugin        : '3.6.4'
+        ]
+    }
+
+    repositories {
+        maven { url LOCAL_REPO }
+    }
+
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:$ver.sonarqube",
+                "io.freefair.gradle:lombok-plugin:$ver.lombokPlugin",
+                "com.github.jengelman.gradle.plugins:shadow:4.0.3"
+    }
+}
+
+ext {
+    defaultEncoding = 'UTF-8'
+
+    releaseName = System.getenv("releaseName") ?: System.getProperty("releaseName") ?: "0"
+    branch = System.getenv("branch") ?: System.getProperty("branch") ?: "0"
+    revision = System.getenv("buildRev") ?: System.getProperty("buildRev") ?: ""
+}
+
+allprojects {
+    repositories {
+        rootProject.buildscript.repositories.each {
+            repositories.add(it)
+        }
+    }
+
+    apply plugin: 'jacoco'
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.sonarqube'
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'maven-publish'
+    apply plugin: "io.freefair.lombok"
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    compileJava {
+        options.encoding = defaultEncoding
+        options.compilerArgs = ['-parameters', '-Xlint:unchecked']
+    }
+
+    compileTestJava {
+        options.encoding = defaultEncoding
+        options.compilerArgs = ['-parameters', '-Xlint:unchecked']
+    }
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+    }
+
+    publishing {
+        repositories {
+            maven {
+                url LOCAL_UPLOAD_REPO
+                credentials {
+                    username LOCAL_USER
+                    password LOCAL_PASSWORD
+                }
+            }
+        }
+    }
+
+    tasks.withType(Javadoc) {
+        options.encoding = defaultEncoding
+        options.memberLevel = JavadocMemberLevel.PRIVATE
+        options.addBooleanOption("Xdoclint:all").setValue(true)
+        options.addStringOption('encoding', defaultEncoding)
+        options.addStringOption('charSet', defaultEncoding)
+    }
+
+    javadoc {
+        source = sourceSets.main.allJava
+        classpath = configurations.compile
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.sourceEncoding', defaultEncoding
+        property 'sonar.java.source property', '1.8'
+        property 'sonar.junit.reportPaths', "$buildDir/test-results/test"
+        property 'sonar.jacoco.reportPaths', "$buildDir/jacoco/test.exec"
+        properties['sonar.coverage.exclusions'] = '**/' + servicePackageSlashes + '/service/biztalk/**/*Processor.*, ' +
+                '**/' + servicePackageSlashes + '/**/*AutoConfiguration.*, ' +
+                '**/' + servicePackageSlashes + '/KafkaConsoleProducer.*'
+    }
+}
+
+idea {
+
+    if (parent == null) {
+        project {
+            languageLevel = '1.8'
+            vcs = 'Git'
+        }
+    }
+
+    module {
+        excludeDirs += file('.idea')
+    }
+}

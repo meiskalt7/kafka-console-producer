@@ -1,0 +1,30 @@
+archivesBaseName = 'kafka-console-producer'
+group = parent.group
+version = parent.version
+
+apply plugin: 'application'
+
+mainClassName = "${servicePackage}.KafkaConsoleProducer"
+
+dependencies {
+
+    compileOnly "org.projectlombok:lombok:1.18.8"
+
+    compile "commons-io:commons-io:2.6",
+            "org.apache.commons:commons-lang3:3.9",
+            "commons-cli:commons-cli:1.4",
+            "org.apache.kafka:kafka-clients:2.3.0"
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': mainClassName
+        )
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
