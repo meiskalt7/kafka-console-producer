@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class KafkaConsoleProducer {
 
@@ -126,10 +129,11 @@ public class KafkaConsoleProducer {
             try {
                 String data = FileUtils.readFileToString(new File(filePath), encoding);
                 ProducerRecord<String, String> message = new ProducerRecord<>(topic, "", data);
-                producer.send(message);
+                Future<RecordMetadata> future = producer.send(message);
+                RecordMetadata recordMetadata = future.get();
                 ++sendCount;
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
+            } catch (IOException | InterruptedException | ExecutionException e) {
+                System.out.println("File from " + filePath + " not loaded, cause:\n" + e.getMessage());
             }
 
             ++allCount;
@@ -179,6 +183,7 @@ public class KafkaConsoleProducer {
         props.put("acks", "all");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("max.request.size", 3145728);
         return new KafkaProducer(props);
     }
 }
