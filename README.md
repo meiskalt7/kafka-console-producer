@@ -8,7 +8,7 @@ Can parse files with chosen encoding by -e program argument
 
 ## Example and instruction
 
-usage: java kafka-console-producer-*.jar [-d <directory>] [-e <encoding>] [-r]
+usage: java -jar kafka-console-producer-*.jar [-d <directory>] [-e <encoding>] [-r]
        [-s <server>] -t <topic>
        
 Options
