@@ -15,7 +15,10 @@ buildscript {
     }
 
     repositories {
-        maven { url LOCAL_REPO }
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
@@ -70,7 +73,7 @@ subprojects {
         from sourceSets.main.allJava
     }
 
-    publishing {
+/*    publishing {
         repositories {
             maven {
                 url LOCAL_UPLOAD_REPO
@@ -80,7 +83,7 @@ subprojects {
                 }
             }
         }
-    }
+    }*/
 
     tasks.withType(Javadoc) {
         options.encoding = defaultEncoding
