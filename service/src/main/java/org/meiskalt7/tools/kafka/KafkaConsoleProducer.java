@@ -93,7 +93,7 @@ class KafkaConsoleProducer {
         props.put("acks", "all");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("max.request.size", 3145728);
+        props.put("max.request.size", commandLine.hasOption("mrs") ? commandLine.getOptionValue("mrs") : 3145728);
         return new KafkaProducer<>(props);
     }
 }

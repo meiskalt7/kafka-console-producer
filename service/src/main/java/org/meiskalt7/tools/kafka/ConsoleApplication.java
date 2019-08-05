@@ -62,12 +62,20 @@ public class ConsoleApplication {
                 .hasArg()
                 .build();
 
+        Option sizeOption = Option.builder("mrs")
+                .longOpt("max.request.size")
+                .argName("max.request.size")
+                .desc("Maximum size of message")
+                .hasArg()
+                .build();
+
         Options posixOptions = new Options();
         posixOptions.addOption(kafkaTopicOption);
         posixOptions.addOption(directoryOption);
         posixOptions.addOption(recursivelyOption);
         posixOptions.addOption(encodingOption);
         posixOptions.addOption(serverOption);
+        posixOptions.addOption(sizeOption);
         return posixOptions;
     }
 
