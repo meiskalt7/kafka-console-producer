@@ -4,7 +4,7 @@ version = parent.version
 
 apply plugin: 'application'
 
-mainClassName = "${servicePackage}.KafkaConsoleProducer"
+mainClassName = "${servicePackage}.ConsoleApplication"
 
 dependencies {
 

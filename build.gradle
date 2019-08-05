@@ -73,18 +73,6 @@ subprojects {
         from sourceSets.main.allJava
     }
 
-/*    publishing {
-        repositories {
-            maven {
-                url LOCAL_UPLOAD_REPO
-                credentials {
-                    username LOCAL_USER
-                    password LOCAL_PASSWORD
-                }
-            }
-        }
-    }*/
-
     tasks.withType(Javadoc) {
         options.encoding = defaultEncoding
         options.memberLevel = JavadocMemberLevel.PRIVATE
@@ -105,9 +93,6 @@ sonarqube {
         property 'sonar.java.source property', '1.8'
         property 'sonar.junit.reportPaths', "$buildDir/test-results/test"
         property 'sonar.jacoco.reportPaths', "$buildDir/jacoco/test.exec"
-        properties['sonar.coverage.exclusions'] = '**/' + servicePackageSlashes + '/service/biztalk/**/*Processor.*, ' +
-                '**/' + servicePackageSlashes + '/**/*AutoConfiguration.*, ' +
-                '**/' + servicePackageSlashes + '/KafkaConsoleProducer.*'
     }
 }
 
