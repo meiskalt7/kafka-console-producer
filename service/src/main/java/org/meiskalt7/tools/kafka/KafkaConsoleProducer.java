@@ -71,7 +71,9 @@ class KafkaConsoleProducer {
                         getPaths(item.getAbsolutePath(), paths, true);
                     }
                 } else {
-                    paths.add(item.getAbsolutePath());
+                    if (!item.getName().contains(".jar")) { //quickfix for current file
+                        paths.add(item.getAbsolutePath());
+                    }
                 }
             }
         } else {
