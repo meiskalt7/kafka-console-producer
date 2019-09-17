@@ -41,7 +41,8 @@ class KafkaConsoleProducer {
         for (String filePath : filePaths) {
             try {
                 String data = FileUtils.readFileToString(new File(filePath), encoding);
-                ProducerRecord<String, String> message = new ProducerRecord<>(topic, "", data);
+                Integer partition = commandLine.hasOption("p") ? Integer.valueOf(commandLine.getOptionValue("partition")) : null;
+                ProducerRecord<String, String> message = new ProducerRecord<>(topic, partition, null, data);
                 Future<RecordMetadata> future = producer.send(message);
                 RecordMetadata recordMetadata = future.get();
                 ++sendCount;

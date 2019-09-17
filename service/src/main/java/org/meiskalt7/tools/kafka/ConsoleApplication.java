@@ -35,6 +35,13 @@ public class ConsoleApplication {
                 .required()
                 .build();
 
+        Option partitionOption = Option.builder("p")
+                .longOpt("partition")
+                .argName("partition")
+                .desc("Kafka partition")
+                .hasArg()
+                .build();
+
         Option directoryOption = Option.builder("d")
                 .longOpt("directory")
                 .argName("directory")
@@ -71,6 +78,7 @@ public class ConsoleApplication {
 
         Options posixOptions = new Options();
         posixOptions.addOption(kafkaTopicOption);
+        posixOptions.addOption(partitionOption);
         posixOptions.addOption(directoryOption);
         posixOptions.addOption(recursivelyOption);
         posixOptions.addOption(encodingOption);
